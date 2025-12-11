@@ -11,27 +11,123 @@ serve(async (req) => {
   }
 
   try {
-    const { story, primaryLPs, secondaryLPs } = await req.json();
+    const { story, primaryLPs, secondaryLPs, targetLevel } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert Amazon behavioral interview coach. You specialize in evaluating STAR (Situation, Task, Action, Result) stories for Amazon Leadership Principle interviews.
+    const systemPrompt = `You are an expert Amazon Bar Raiser interviewer with deep knowledge of Amazon's Leadership Principles and evaluation standards. You evaluate STAR stories using Amazon's actual interview framework.
 
-Your job is to provide actionable, specific feedback to help candidates improve their interview stories. Focus on:
-1. STAR structure quality
-2. Personal ownership ("I" vs "we")
-3. Quantified metrics and results
-4. Leadership Principle alignment
-5. Senior-level signals (cross-functional impact, strategic thinking, scale)
+## Amazon's 4-Point Rating Scale
+- **Strong Hire**: Raises the bar - Exceptional example that would elevate the team
+- **Hire**: Meets the bar - Solid demonstration, fits Amazon standards  
+- **No Hire**: Below the bar - Weak or missing signal for this LP
+- **Strong No Hire**: Significant concerns - Red flags or fundamental misalignment
 
-Always be constructive and specific. Provide concrete examples of how to improve.`;
+## Level-Specific Scope Expectations
+| Level | Expected Scope |
+|-------|----------------|
+| L4 (Entry PM/SDE) | Individual task, single team |
+| L5 (PM/SDE II) | Project-level, cross-team collaboration |
+| L6 (Senior PM/SDE III) | Org-level impact, multiple stakeholders, strategic decisions |
+| L7 (Principal) | Company-wide, industry-level thinking |
 
-    const userPrompt = `Evaluate this STAR story for an Amazon behavioral interview:
+## STAR Quality Rubric (1-4 Scale)
+**Situation:**
+- 1 (Weak): No context
+- 2 (Adequate): Basic context
+- 3 (Strong): Context + scale
+- 4 (Exceptional): Context + scale + stakes + why it mattered
+
+**Task:**
+- 1: Unclear ownership
+- 2: Team goal mentioned
+- 3: YOUR specific responsibility clear
+- 4: Your role + why you were chosen
+
+**Action:**
+- 1: Vague "we did X"
+- 2: Some personal actions
+- 3: Clear "I did X, Y, Z" with reasoning
+- 4: Detailed steps + what you considered but rejected + stakeholder management
+
+**Result:**
+- 1: No outcome
+- 2: Qualitative outcome
+- 3: 1-2 metrics
+- 4: Multiple metrics + business impact + learnings + what you'd do differently
+
+## The "I" vs "We" Standard
+Amazon's internal guidance: "80% of your answer should focus on YOUR individual contribution, not what the team did."
+- Target ratio: At least 3:1 (I:we)
+- If "we" dominates → assume candidate is hiding weak individual contribution
+
+## Metrics Quality Standard
+| Quality | Example | Rating |
+|---------|---------|--------|
+| None | "It went well" | ❌ Weak |
+| Vague | "Improved significantly" | ❌ Weak |
+| Directional | "Increased by double digits" | ⚠️ Borderline |
+| Specific | "Increased 23%" | ✅ Good |
+| Contextualized | "Increased 23% vs 5% industry average" | ✅ Strong |
+| Business Impact | "Increased 23%, adding $2M ARR" | ✅ Exceptional |
+
+Rule: Every story should have at least 2-3 quantified metrics.
+
+## Senior-Level Signals (L6+)
+| Signal | What to Look For |
+|--------|-----------------|
+| Strategic Thinking | Long-term vision, tradeoff reasoning |
+| Cross-functional Leadership | Influenced eng, design, legal without authority |
+| Ambiguity Navigation | Made decisions without clear direction |
+| Mechanism Creation | Built processes that outlasted you |
+| Developing Others | Mentored, coached, grew team members |
+| Disagree & Commit | Pushed back on leadership AND committed when overruled |
+| Failure Ownership | Real mistakes admitted, not humble brags |
+
+## Story Quality Scorecard (100 points)
+
+STRUCTURE (25 points)
+- Situation: Concise, contextualized (5)
+- Task: Clear personal ownership (5)
+- Action: 60-70% of answer, "I" focused (10)
+- Result: Outcomes + learnings (5)
+
+METRICS & EVIDENCE (25 points)
+- At least 2 quantified metrics (10)
+- Business impact stated (10)
+- Timeframe/scale included (5)
+
+SENIOR SIGNALS (25 points)
+- Appropriate scope for level (10)
+- Cross-functional complexity (5)
+- Strategic reasoning shown (5)
+- Mechanism/systemic improvement (5)
+
+LP ALIGNMENT (15 points)
+- Clearly demonstrates primary LP (10)
+- Can flex to secondary LPs (5)
+
+DELIVERY READINESS (10 points)
+- 2-3 minute length potential (5)
+- Clear narrative arc (5)
+
+SCORING:
+- 90-100: Strong Hire - Ready to go
+- 75-89: Hire - Minor polishing needed
+- 60-74: Borderline - Needs improvement
+- <60: Needs Work - Major revision required
+
+Be specific, constructive, and actionable. Reference actual Amazon standards in your feedback.`;
+
+    const level = targetLevel || "L6";
+    
+    const userPrompt = `Evaluate this STAR story for an Amazon behavioral interview at ${level} level:
 
 **Story Details:**
+- Target Level: ${level}
 - Primary Leadership Principles: ${primaryLPs.join(", ")}
 - Secondary Leadership Principles: ${secondaryLPs.join(", ")}
 
@@ -43,19 +139,73 @@ Always be constructive and specific. Provide concrete examples of how to improve
 
 **Result:** ${story.result}
 
-**Key Metrics:** ${story.metrics.filter((m: string) => m).join(", ") || "None provided"}
+**Key Metrics Provided:** ${story.metrics.filter((m: string) => m).join(", ") || "None provided"}
 
-Please provide your evaluation in the following JSON format:
+## Analysis Required:
+
+1. **Count "I" vs "We" usage** in the Action section
+2. **Score each STAR element** (1-4)
+3. **Calculate the 100-point scorecard**
+4. **Determine Amazon rating** (Strong Hire/Hire/No Hire/Strong No Hire)
+5. **Check scope appropriateness** for ${level}
+6. **Identify red flags** from the checklist
+
+Respond in this exact JSON format:
 {
-  "summary": "A 2-3 sentence overall assessment of the story",
-  "strengths": ["strength 1", "strength 2", "strength 3"],
-  "improvements": ["specific improvement 1", "specific improvement 2", "specific improvement 3"],
-  "suggestedMetrics": ["suggested metric 1", "suggested metric 2"],
-  "lpFeedback": ["feedback on LP alignment 1", "feedback on LP alignment 2"],
-  "interviewTip": "One key tip for delivering this story in an interview"
+  "amazonRating": "Strong Hire" | "Hire" | "No Hire" | "Strong No Hire",
+  "totalScore": <number out of 100>,
+  "scoreBreakdown": {
+    "structure": <out of 25>,
+    "metricsEvidence": <out of 25>,
+    "seniorSignals": <out of 25>,
+    "lpAlignment": <out of 15>,
+    "deliveryReadiness": <out of 10>
+  },
+  "starScores": {
+    "situation": <1-4>,
+    "task": <1-4>,
+    "action": <1-4>,
+    "result": <1-4>
+  },
+  "iWeAnalysis": {
+    "iCount": <number>,
+    "weCount": <number>,
+    "ratio": "<X:1>",
+    "verdict": "Passing" | "Borderline" | "Failing"
+  },
+  "metricsQuality": "None" | "Vague" | "Directional" | "Specific" | "Contextualized" | "Business Impact",
+  "scopeAssessment": {
+    "currentScope": "L4" | "L5" | "L6" | "L7",
+    "targetLevel": "${level}",
+    "verdict": "Appropriate" | "Too Junior" | "Too Senior"
+  },
+  "seniorSignalsPresent": ["list of signals found"],
+  "seniorSignalsMissing": ["list of signals missing"],
+  "redFlags": ["specific red flags identified"],
+  "mustHaveChecklist": {
+    "businessContextClear": true/false,
+    "specificRoleClear": true/false,
+    "iDominatesWe": true/false,
+    "atLeast2Metrics": true/false,
+    "learningsIncluded": true/false,
+    "scopeMatchesLevel": true/false
+  },
+  "summary": "2-3 sentence Bar Raiser assessment",
+  "topStrengths": ["strength 1", "strength 2", "strength 3"],
+  "criticalImprovements": ["specific actionable improvement 1", "improvement 2", "improvement 3"],
+  "rewriteSuggestions": {
+    "situation": "Suggested rewrite or 'Good as is'",
+    "task": "Suggested rewrite or 'Good as is'",
+    "action": "Key phrases to add or change",
+    "result": "Suggested metrics to add"
+  },
+  "interviewTip": "One key delivery tip for this specific story"
 }
 
 Respond ONLY with the JSON object, no additional text.`;
+
+    console.log("Evaluating story for level:", level);
+    console.log("Primary LPs:", primaryLPs);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -69,8 +219,6 @@ Respond ONLY with the JSON object, no additional text.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 1000,
       }),
     });
 
@@ -95,6 +243,8 @@ Respond ONLY with the JSON object, no additional text.`;
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
+    console.log("AI Response received, length:", content?.length);
+
     if (!content) {
       throw new Error("No response from AI");
     }
@@ -102,7 +252,6 @@ Respond ONLY with the JSON object, no additional text.`;
     // Parse the JSON response
     let evaluation;
     try {
-      // Try to extract JSON from the response (handle cases where there might be markdown code blocks)
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         evaluation = JSON.parse(jsonMatch[0]);
@@ -112,14 +261,14 @@ Respond ONLY with the JSON object, no additional text.`;
     } catch (parseError) {
       console.error("Failed to parse AI response:", content);
       evaluation = {
+        amazonRating: "Unable to evaluate",
+        totalScore: 0,
         summary: "Unable to parse AI evaluation. Please try again.",
-        strengths: [],
-        improvements: [],
-        suggestedMetrics: [],
-        lpFeedback: [],
-        interviewTip: "Ensure your story follows the STAR format clearly."
+        error: true
       };
     }
+
+    console.log("Evaluation complete. Rating:", evaluation.amazonRating, "Score:", evaluation.totalScore);
 
     return new Response(JSON.stringify(evaluation), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
