@@ -14,7 +14,140 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      evaluations: {
+        Row: {
+          amazon_rating: string | null
+          created_at: string
+          critical_improvements: string[] | null
+          i_vs_we_analysis: Json | null
+          id: string
+          interview_tip: string | null
+          lp_labels: Json | null
+          metrics_quality: Json | null
+          must_have_checklist: Json | null
+          red_flags: string[] | null
+          rewrite_suggestions: Json | null
+          scope_assessment: Json | null
+          score_breakdown: Json | null
+          senior_signals: Json | null
+          star_scores: Json | null
+          story_id: string
+          summary: string | null
+          target_level: string
+          top_strengths: string[] | null
+          total_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          amazon_rating?: string | null
+          created_at?: string
+          critical_improvements?: string[] | null
+          i_vs_we_analysis?: Json | null
+          id?: string
+          interview_tip?: string | null
+          lp_labels?: Json | null
+          metrics_quality?: Json | null
+          must_have_checklist?: Json | null
+          red_flags?: string[] | null
+          rewrite_suggestions?: Json | null
+          scope_assessment?: Json | null
+          score_breakdown?: Json | null
+          senior_signals?: Json | null
+          star_scores?: Json | null
+          story_id: string
+          summary?: string | null
+          target_level?: string
+          top_strengths?: string[] | null
+          total_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          amazon_rating?: string | null
+          created_at?: string
+          critical_improvements?: string[] | null
+          i_vs_we_analysis?: Json | null
+          id?: string
+          interview_tip?: string | null
+          lp_labels?: Json | null
+          metrics_quality?: Json | null
+          must_have_checklist?: Json | null
+          red_flags?: string[] | null
+          rewrite_suggestions?: Json | null
+          scope_assessment?: Json | null
+          score_breakdown?: Json | null
+          senior_signals?: Json | null
+          star_scores?: Json | null
+          story_id?: string
+          summary?: string | null
+          target_level?: string
+          top_strengths?: string[] | null
+          total_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluations_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stories: {
+        Row: {
+          action: string
+          company: string | null
+          created_at: string
+          id: string
+          metrics: string[] | null
+          primary_lps: string[] | null
+          questions_matched: string[] | null
+          result: string
+          role: string | null
+          secondary_lps: string[] | null
+          situation: string
+          strength: number | null
+          task: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action: string
+          company?: string | null
+          created_at?: string
+          id?: string
+          metrics?: string[] | null
+          primary_lps?: string[] | null
+          questions_matched?: string[] | null
+          result: string
+          role?: string | null
+          secondary_lps?: string[] | null
+          situation: string
+          strength?: number | null
+          task: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          company?: string | null
+          created_at?: string
+          id?: string
+          metrics?: string[] | null
+          primary_lps?: string[] | null
+          questions_matched?: string[] | null
+          result?: string
+          role?: string | null
+          secondary_lps?: string[] | null
+          situation?: string
+          strength?: number | null
+          task?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
