@@ -2,6 +2,7 @@ import { X, Save } from 'lucide-react';
 import { Story } from '@/types/story';
 import { leadershipPrinciples } from '@/data/leadershipPrinciples';
 import { StoryEvaluation } from './StoryEvaluation';
+import { AIStoryEvaluation } from './AIStoryEvaluation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -241,7 +242,10 @@ export const StoryEditor = ({ story, isNew, onSave, onClose }: StoryEditorProps)
 
             {/* Live Evaluation Preview */}
             {(story.situation || story.action || story.result) && (
-              <StoryEvaluation story={story} />
+              <>
+                <StoryEvaluation story={story} />
+                <AIStoryEvaluation story={story} />
+              </>
             )}
 
             {/* Save Button */}
