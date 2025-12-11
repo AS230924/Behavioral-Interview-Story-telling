@@ -1,12 +1,13 @@
-import { Plus, Edit3, Trash2, Star, ChevronDown, ChevronRight, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Edit3, Trash2, Star, ChevronDown, ChevronRight, Zap, Sparkles } from 'lucide-react';
 import { Story } from '@/types/story';
 import { commonQuestions } from '@/data/commonQuestions';
 import { getLP } from '@/data/leadershipPrinciples';
 import { evaluateStory } from '@/utils/storyEvaluator';
 import { StoryEvaluation } from './StoryEvaluation';
+import { AIStoryEvaluation } from './AIStoryEvaluation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
 
 interface StoriesViewProps {
   stories: Story[];
@@ -150,7 +151,10 @@ export const StoriesView = ({ stories, onAddStory, onEditStory, onDeleteStory }:
             </button>
 
             {isExpanded && (
-              <StoryEvaluation story={story} />
+              <div className="space-y-4 mb-4">
+                <StoryEvaluation story={story} />
+                <AIStoryEvaluation story={story} />
+              </div>
             )}
 
             {/* Matched Questions */}
