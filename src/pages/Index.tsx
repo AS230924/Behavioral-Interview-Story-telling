@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Target, BookOpen, HelpCircle, BarChart3 } from 'lucide-react';
 import { Story } from '@/types/story';
-import { sampleStories } from '@/data/sampleStories';
+import { useStories } from '@/hooks/useStories';
 import { StoriesView } from '@/components/StoriesView';
 import { QuestionsView } from '@/components/QuestionsView';
 import { CoverageMatrix } from '@/components/CoverageMatrix';
@@ -13,13 +13,13 @@ import { cn } from '@/lib/utils';
 type ViewMode = 'stories' | 'questions' | 'matrix';
 
 const Index = () => {
-  const [stories, setStories] = useState<Story[]>(sampleStories);
+  const { stories, loading, saveStory, deleteStory } = useStories();
   const [viewMode, setViewMode] = useState<ViewMode>('stories');
   const [editingStory, setEditingStory] = useState<Story | null>(null);
   const [isNewStory, setIsNewStory] = useState(false);
 
   const createEmptyStory = (): Story => ({
-    id: `story${Date.now()}`,
+    id: crypto.randomUUID(),
     title: '',
     company: '',
     role: '',
@@ -48,24 +48,25 @@ const Index = () => {
     setEditingStory(updatedStory);
   };
 
-  const handleCloseEditor = () => {
+  const handleCloseEditor = async () => {
     if (editingStory && editingStory.title) {
-      const existingIndex = stories.findIndex(s => s.id === editingStory.id);
-      if (existingIndex >= 0) {
-        const newStories = [...stories];
-        newStories[existingIndex] = editingStory;
-        setStories(newStories);
-      } else {
-        setStories([...stories, editingStory]);
-      }
+      await saveStory(editingStory);
     }
     setEditingStory(null);
     setIsNewStory(false);
   };
 
-  const handleDeleteStory = (id: string) => {
-    setStories(stories.filter(s => s.id !== id));
+  const handleDeleteStory = async (id: string) => {
+    await deleteStory(id);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground">Loading stories...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
