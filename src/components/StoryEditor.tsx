@@ -1,4 +1,5 @@
-import { X, Save } from 'lucide-react';
+import { useState } from 'react';
+import { X, Save, Wand2, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { Story } from '@/types/story';
 import { leadershipPrinciples } from '@/data/leadershipPrinciples';
 import { StoryEvaluation } from './StoryEvaluation';
@@ -7,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface StoryEditorProps {
   story: Story;
@@ -16,8 +19,54 @@ interface StoryEditorProps {
 }
 
 export const StoryEditor = ({ story, isNew, onSave, onClose }: StoryEditorProps) => {
+  const [rawStory, setRawStory] = useState('');
+  const [showRawInput, setShowRawInput] = useState(isNew);
+  const [isParsing, setIsParsing] = useState(false);
+
   const handleChange = (field: keyof Story, value: any) => {
     onSave({ ...story, [field]: value });
+  };
+
+  const parseRawStory = async () => {
+    if (!rawStory.trim() || rawStory.trim().length < 50) {
+      toast.error('Please enter a more detailed story (at least 50 characters)');
+      return;
+    }
+
+    setIsParsing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('parse-story', {
+        body: { rawStory }
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Update the story with parsed data
+      onSave({
+        ...story,
+        title: data.title || story.title,
+        situation: data.situation || '',
+        task: data.task || '',
+        action: data.action || '',
+        result: data.result || '',
+        metrics: data.metrics || [],
+        primaryLPs: data.suggestedLPs?.slice(0, 2) || [],
+        secondaryLPs: data.suggestedLPs?.slice(2, 4) || [],
+      });
+
+      setShowRawInput(false);
+      setRawStory('');
+      toast.success(`Story parsed successfully! (Confidence: ${data.confidence || 'medium'})`);
+    } catch (error) {
+      console.error('Failed to parse story:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to parse story');
+    } finally {
+      setIsParsing(false);
+    }
   };
 
   const toggleLP = (lpId: string, isPrimary: boolean) => {
@@ -50,6 +99,56 @@ export const StoryEditor = ({ story, isNew, onSave, onClose }: StoryEditorProps)
           </div>
 
           <div className="space-y-6">
+            {/* AI Story Parser */}
+            <div className="border border-primary/30 rounded-lg bg-primary/5 overflow-hidden">
+              <button
+                onClick={() => setShowRawInput(!showRawInput)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-primary/10 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <Wand2 className="w-5 h-5 text-primary" />
+                  <span className="font-medium text-foreground">AI Story Parser</span>
+                  <span className="text-xs text-muted-foreground">(paste raw story, AI breaks it into STAR)</span>
+                </div>
+                {showRawInput ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </button>
+              
+              {showRawInput && (
+                <div className="p-4 pt-0 space-y-3">
+                  <Textarea
+                    value={rawStory}
+                    onChange={(e) => setRawStory(e.target.value)}
+                    className="min-h-[150px] resize-none"
+                    placeholder="Paste your raw, unstructured story here. For example:
+
+'Last year at my company, we had a major issue with our checkout flow. Customers were abandoning carts at a 45% rate. I led a cross-functional team of 5 engineers and 2 designers to completely redesign the flow. I personally conducted 20+ user interviews, analyzed funnel data, and proposed a 3-step checkout instead of 6 steps. After 8 weeks, we reduced abandonment to 28% and increased revenue by $2.3M annually...'"
+                  />
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {rawStory.length} characters • AI will extract Situation, Task, Action, Result
+                    </p>
+                    <Button
+                      onClick={parseRawStory}
+                      disabled={isParsing || rawStory.trim().length < 50}
+                      className="gap-2"
+                    >
+                      {isParsing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Parsing...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="w-4 h-4" />
+                          Parse with AI
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Basic Info */}
             <div className="grid grid-cols-3 gap-4">
               <div className="col-span-3">
