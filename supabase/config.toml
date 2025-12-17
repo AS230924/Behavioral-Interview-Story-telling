@@ -1,1 +1,7 @@
 project_id = "uewswdtjdysgqikmwjav"
+
+[functions.evaluate-story]
+verify_jwt = false
+
+[functions.parse-story]
+verify_jwt = false
