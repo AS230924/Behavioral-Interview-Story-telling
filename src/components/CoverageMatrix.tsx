@@ -51,7 +51,7 @@ export const CoverageMatrix = ({ stories }: CoverageMatrixProps) => {
           {stories.map(story => {
             const evalResult = evaluateStory(story);
             return (
-              <tr key={story.id} className="hover:bg-secondary/50 transition-colors">
+              <tr key={story.id} className="hover:bg-muted/20 transition-colors">
                 <td className="p-2 border-b border-border font-medium text-foreground">{story.title}</td>
                 <td className="p-2 border-b border-border">
                   <span className={cn('px-1.5 py-0.5 rounded text-xs', getRatingClass(evalResult.overallRating))}>
@@ -72,7 +72,7 @@ export const CoverageMatrix = ({ stories }: CoverageMatrixProps) => {
               </tr>
             );
           })}
-          <tr className="bg-secondary/50 font-medium">
+          <tr className="bg-muted/20 font-medium">
             <td className="p-2 border-t border-border text-foreground">Coverage</td>
             <td className="p-2 border-t border-border"></td>
             {leadershipPrinciples.map(lp => {

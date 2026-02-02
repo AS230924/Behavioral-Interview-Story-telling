@@ -149,7 +149,7 @@ export const AIStoryEvaluation = ({ story }: AIStoryEvaluationProps) => {
           <select
             value={targetLevel}
             onChange={(e) => setTargetLevel(e.target.value)}
-            className="px-2 py-1 text-sm bg-secondary border border-border rounded-md"
+            className="px-2 py-1 text-sm bg-background border border-border rounded-md text-foreground"
           >
             {levelOptions.map(level => (
               <option key={level} value={level}>{level}</option>

@@ -56,7 +56,7 @@ export const QuestionsView = ({ stories, onAddStory }: QuestionsViewProps) => {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground"
+            className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground"
           >
             {questionCategories.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
@@ -65,7 +65,7 @@ export const QuestionsView = ({ stories, onAddStory }: QuestionsViewProps) => {
           <select
             value={filterLP}
             onChange={(e) => setFilterLP(e.target.value)}
-            className="px-3 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground"
+            className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground"
           >
             <option value="all">All Leadership Principles</option>
             {leadershipPrinciples.map(lp => (
@@ -98,7 +98,7 @@ export const QuestionsView = ({ stories, onAddStory }: QuestionsViewProps) => {
                     ) : (
                       <AlertTriangle className="w-5 h-5 text-destructive" />
                     )}
-                    <span className="text-xs px-2 py-0.5 bg-secondary text-muted-foreground rounded">
+                    <span className="text-xs px-2 py-0.5 bg-muted/30 text-muted-foreground rounded">
                       {question.category}
                     </span>
                   </div>
