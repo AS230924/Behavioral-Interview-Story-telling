@@ -138,7 +138,7 @@ export const AIStoryEvaluation = ({ story }: AIStoryEvaluationProps) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary rounded-xl p-4 border border-primary/20">
+    <div className="bg-card rounded-xl p-4 border border-primary/20">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-primary" />
@@ -216,7 +216,7 @@ export const AIStoryEvaluation = ({ story }: AIStoryEvaluationProps) => {
                   { label: 'LP Alignment', value: evaluation.scoreBreakdown.lpAlignment, max: 15 },
                   { label: 'Delivery', value: evaluation.scoreBreakdown.deliveryReadiness, max: 10 },
                 ].map(item => (
-                  <div key={item.label} className="bg-secondary/50 rounded-lg p-2 text-center">
+                  <div key={item.label} className="bg-muted/20 rounded-lg p-2 text-center">
                     <div className="text-xs text-muted-foreground mb-1">{item.label}</div>
                     <div className="text-lg font-bold text-foreground">{item.value}<span className="text-xs text-muted-foreground">/{item.max}</span></div>
                     <div className="w-full bg-muted rounded-full h-1.5 mt-1">
@@ -244,7 +244,7 @@ export const AIStoryEvaluation = ({ story }: AIStoryEvaluationProps) => {
                 ].map(item => {
                   const score = evaluation.starScores[item.key as keyof typeof evaluation.starScores];
                   return (
-                    <div key={item.key} className="bg-secondary/50 rounded-lg p-2 text-center">
+                    <div key={item.key} className="bg-muted/20 rounded-lg p-2 text-center">
                       <span className={cn('star-badge mb-1', item.cls)}>{item.letter}</span>
                       <div className="text-lg font-bold text-foreground">{score}/4</div>
                       <div className="text-xs text-muted-foreground">{getStarScoreLabel(score)}</div>
@@ -305,7 +305,7 @@ export const AIStoryEvaluation = ({ story }: AIStoryEvaluationProps) => {
               </div>
             )}
             {evaluation.metricsQuality && (
-              <div className="bg-secondary/50 rounded-lg p-3 border border-border">
+              <div className="bg-muted/20 rounded-lg p-3 border border-border">
                 <h5 className="text-xs font-medium text-muted-foreground mb-1">Metrics Quality</h5>
                 <div className="text-sm font-medium">{evaluation.metricsQuality}</div>
                 {evaluation.metricsQuality === 'None' || evaluation.metricsQuality === 'Vague' ? (
