@@ -188,6 +188,12 @@
     @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-lg;
   }
 
+  /* Placeholder styling */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground/50;
+  }
+
   .star-badge {
     @apply inline-flex items-center justify-center w-6 h-6 rounded-md text-xs font-bold text-white;
   }
