@@ -92,7 +92,7 @@ export const StoriesView = ({ stories, onAddStory, onEditStory, onDeleteStory }:
                 { letter: 'A', label: 'Action', content: story.action, score: evaluation.starScores.action, cls: 'star-a' },
                 { letter: 'R', label: 'Result', content: story.result, score: evaluation.starScores.result, cls: 'star-r' }
               ].map(item => (
-                <div key={item.letter} className="bg-secondary/50 rounded-lg p-3">
+                <div key={item.letter} className="bg-muted/20 rounded-lg p-3 border border-border/50">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-1.5">
                       <span className={cn('star-badge', item.cls)}>{item.letter}</span>
@@ -162,7 +162,7 @@ export const StoriesView = ({ stories, onAddStory, onEditStory, onDeleteStory }:
               <p className="text-sm font-medium text-muted-foreground mb-2">✅ Can answer these questions:</p>
               <div className="flex flex-wrap gap-2">
                 {matchedQuestions.slice(0, 6).map(q => (
-                  <span key={q.id} className="px-2 py-1 bg-secondary text-foreground rounded-md text-xs">
+                  <span key={q.id} className="px-2 py-1 bg-muted/30 text-foreground rounded-md text-xs">
                     {q.text.length > 40 ? q.text.substring(0, 40) + '...' : q.text}
                   </span>
                 ))}

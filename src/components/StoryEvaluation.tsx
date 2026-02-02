@@ -29,7 +29,7 @@ export const StoryEvaluation = ({ story }: StoryEvaluationProps) => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-secondary/50 to-muted/50 rounded-xl p-4 border border-border">
+    <div className="bg-card rounded-xl p-4 border border-border">
       <div 
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setExpanded(!expanded)}
