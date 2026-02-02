@@ -89,13 +89,13 @@ Remember to:
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "nvidia/nemotron-3-nano-30b-a3b:free",
+          model: "arcee-ai/trinity-large-preview:free",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt }
           ],
           temperature: 0.3,
-          max_tokens: 2048,
+          max_tokens: 4096,
         }),
       }
     );
