@@ -1,73 +1,157 @@
-# Welcome to your Lovable project
+# Amazon LP Story Mapper
 
-## Project info
+An AI-powered tool for Amazon behavioral interview preparation. Input your stories in STAR format and receive detailed feedback based on Amazon's actual Bar Raiser evaluation framework.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+### 📝 Story Management
+- Create and manage STAR-format stories (Situation, Task, Action, Result)
+- Tag stories with primary and secondary Leadership Principles
+- Track metrics and quantifiable achievements
+- Match stories to common interview questions
 
-There are several ways of editing your application.
+### 🤖 AI-Powered Story Parsing
+Paste raw, unstructured narratives and let AI automatically:
+- Extract and structure into STAR format
+- Identify relevant Leadership Principles
+- Pull out key metrics and achievements
+- Assess confidence level of the extraction
 
-**Use Lovable**
+### 📊 Bar Raiser Evaluation
+Get comprehensive feedback using Amazon's actual evaluation framework:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+**Rating Scale**
+- Strong Hire (90-100): Raises the bar
+- Hire (75-89): Meets the bar
+- No Hire (60-74): Below the bar
+- Strong No Hire (<60): Red flags or gaps
 
-Changes made via Lovable will be committed automatically to this repo.
+**100-Point Scorecard**
+- STAR Structure (20 pts)
+- Metrics & Evidence (25 pts)
+- Individual Contribution (20 pts)
+- Level-Appropriate Scope (20 pts)
+- LP Alignment (15 pts)
 
-**Use your preferred IDE**
+**Level-Specific Evaluation**
+- L4: Individual task, single team scope
+- L5: Project-level, cross-team collaboration
+- L6: Org-level, strategic decisions
+- L7: Company-wide, industry-level impact
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🎯 Coverage Matrix
+Visual dashboard showing:
+- Which Leadership Principles are covered by your stories
+- Story strength ratings at a glance
+- Gaps in your interview preparation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### ❓ Question Bank
+- Common Amazon behavioral interview questions
+- Filter by category and Leadership Principle
+- See which stories can answer each question
 
-Follow these steps:
+## Leadership Principles Covered
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+| ID | Leadership Principle |
+|----|---------------------|
+| CO | Customer Obsession |
+| OWN | Ownership |
+| INV | Invent and Simplify |
+| ARL | Are Right, A Lot |
+| LBC | Learn and Be Curious |
+| HDB | Hire and Develop the Best |
+| IHS | Insist on Highest Standards |
+| TB | Think Big |
+| BFA | Bias for Action |
+| FRU | Frugality |
+| ET | Earn Trust |
+| DD | Dive Deep |
+| BB | Have Backbone; Disagree and Commit |
+| DR | Deliver Results |
+| BE | Strive to be Earth's Best Employer |
+| BR | Success and Scale Bring Broad Responsibility |
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Tech Stack
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Frontend**: React, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Edge Functions)
+- **AI**: OpenRouter API (LLM for parsing and evaluation)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables (Supabase credentials)
+4. Run development server: `npm run dev`
+
+## Usage
+
+### Adding a Story
+
+1. Navigate to the Stories tab
+2. Click "Add New Story"
+3. Either:
+   - **Manual Entry**: Fill in each STAR component
+   - **AI Parse**: Paste raw text and let AI structure it
+4. Select primary and secondary Leadership Principles
+5. Add key metrics
+6. Save your story
+
+### Evaluating a Story
+
+1. Open any saved story
+2. Select your target level (L4-L7)
+3. Click "Get AI Evaluation"
+4. Review:
+   - Overall rating and score
+   - STAR component scores (1-4 each)
+   - I:We ratio analysis
+   - Strengths and improvements
+   - Rewrite suggestions
+
+### Interview Prep Workflow
+
+1. Add 8-12 stories covering different Leadership Principles
+2. Check the Coverage Matrix for gaps
+3. Use AI evaluation to strengthen weak stories
+4. Review the Questions view to ensure coverage
+5. Practice delivery using rewrite suggestions
+
+## API Reference
+
+### Parse Story Endpoint
+```
+POST /functions/v1/parse-story
+Body: { "rawStory": "string" }
+Returns: { title, situation, task, action, result, metrics, suggestedLPs, confidence }
 ```
 
-**Edit a file directly in GitHub**
+### Evaluate Story Endpoint
+```
+POST /functions/v1/evaluate-story
+Body: { story, primaryLPs, secondaryLPs, targetLevel }
+Returns: { amazonRating, totalScore, scoreBreakdown, starScores, ... }
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Evaluation Criteria
 
-**Use GitHub Codespaces**
+### STAR Quality Rubric (1-4 Scale)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Score | Situation | Task | Action | Result |
+|-------|-----------|------|--------|--------|
+| 1 | Vague context | Unclear responsibility | Vague/team-focused | No measurable outcome |
+| 2 | Basic context | Generic statement | Some "I" statements | Vague outcome |
+| 3 | Clear + 2 details | Clear accountability | 2-3 specific steps | 1-2 metrics |
+| 4 | Rich + business impact | Measurable objective | 4+ detailed actions | Multiple metrics + learnings |
 
-## What technologies are used for this project?
+### I:We Ratio Targets
 
-This project is built with:
+| Level | Target Ratio | Focus |
+|-------|-------------|-------|
+| L4-L5 | 3:1 | Personal execution |
+| L6 | 2:1 | Leadership + team enablement |
+| L7+ | 1.5:1 | Strategic direction + team leverage |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## License
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT
