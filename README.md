@@ -1,4 +1,4 @@
-# Amazon LP Story Mapper
+# Amazon-style Story Mapper
 
 An AI-powered tool for Amazon behavioral interview preparation. Input your stories in STAR format and receive detailed feedback based on Amazon's actual Bar Raiser evaluation framework.
 
