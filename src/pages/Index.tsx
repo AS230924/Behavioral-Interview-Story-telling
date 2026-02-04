@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Target, BookOpen, HelpCircle, BarChart3 } from 'lucide-react';
+import { Target, BookOpen, HelpCircle, BarChart3, LogOut } from 'lucide-react';
 import { Story } from '@/types/story';
 import { useStories } from '@/hooks/useStories';
+import { useAuth } from '@/contexts/AuthContext';
 import { StoriesView } from '@/components/StoriesView';
 import { QuestionsView } from '@/components/QuestionsView';
 import { CoverageMatrix } from '@/components/CoverageMatrix';
@@ -14,6 +15,7 @@ type ViewMode = 'stories' | 'questions' | 'matrix';
 
 const Index = () => {
   const { stories, loading, saveStory, deleteStory } = useStories();
+  const { user, signOut } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('stories');
   const [editingStory, setEditingStory] = useState<Story | null>(null);
   const [isNewStory, setIsNewStory] = useState(false);
@@ -85,8 +87,11 @@ const Index = () => {
               <p className="text-muted-foreground mt-1">
                 Map and evaluate your STAR stories for Amazon interview success
               </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Signed in as {user?.email}
+              </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant={viewMode === 'stories' ? 'default' : 'secondary'}
                 onClick={() => setViewMode('stories')}
@@ -110,6 +115,14 @@ const Index = () => {
               >
                 <BarChart3 className="w-4 h-4" />
                 Coverage
+              </Button>
+              <Button
+                variant="outline"
+                onClick={signOut}
+                className="gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
               </Button>
             </div>
           </div>

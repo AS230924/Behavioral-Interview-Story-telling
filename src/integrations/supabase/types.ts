@@ -111,6 +111,7 @@ export type Database = {
           task: string
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           action: string
@@ -128,6 +129,7 @@ export type Database = {
           task: string
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           action?: string
@@ -145,6 +147,7 @@ export type Database = {
           task?: string
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
