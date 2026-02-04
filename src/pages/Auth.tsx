@@ -108,7 +108,7 @@ const Auth = () => {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Target className="w-8 h-8 text-primary" />
-            <CardTitle className="text-2xl">Story-Question Mapper</CardTitle>
+            <CardTitle className="text-2xl">Master Your Story</CardTitle>
           </div>
           <CardDescription>
             Sign in to manage your STAR stories for Amazon interview prep

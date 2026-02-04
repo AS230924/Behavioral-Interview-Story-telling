@@ -79,7 +79,7 @@ const Index = () => {
             <div>
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <Target className="w-7 h-7 text-primary" />
-                Story-Question Mapper
+                Master Your Story
                 <span className="ml-2 px-2 py-1 bg-primary/15 text-primary rounded-md text-xs font-medium">
                   + AI Evaluation
                 </span>
