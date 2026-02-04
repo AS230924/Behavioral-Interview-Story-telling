@@ -111,7 +111,7 @@ const Auth = () => {
             <CardTitle className="text-2xl">Master Your Story</CardTitle>
           </div>
           <CardDescription>
-            Sign in to manage your STAR stories for Amazon interview prep
+            Sign in to manage your STAR stories for behavioral interview prep
           </CardDescription>
         </CardHeader>
         <CardContent>
