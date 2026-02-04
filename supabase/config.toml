@@ -4,10 +4,10 @@ project_id = "uewswdtjdysgqikmwjav"
 site_url = "https://masteryourstory.lovable.app"
 
 [auth.email]
-subject_confirm = "Confirm your Masteryourstory email"
-subject_magic_link = "Your Masteryourstory login link"
-subject_change_email = "Confirm your Masteryourstory email change"
-subject_reset_password = "Reset your Masteryourstory password"
+subject_confirm = "Confirm your Master Your Story email"
+subject_magic_link = "Your Master Your Story login link"
+subject_change_email = "Confirm your Master Your Story email change"
+subject_reset_password = "Reset your Master Your Story password"
 
 [functions.evaluate-story]
 verify_jwt = false
