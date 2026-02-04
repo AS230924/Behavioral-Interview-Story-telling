@@ -2,13 +2,21 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Story } from '@/types/story';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const useStories = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const fetchStories = async () => {
+    if (!user) {
+      setStories([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('stories')
@@ -47,9 +55,19 @@ export const useStories = () => {
   };
 
   const saveStory = async (story: Story): Promise<Story | null> => {
+    if (!user) {
+      toast({
+        title: 'Error',
+        description: 'You must be logged in to save stories',
+        variant: 'destructive'
+      });
+      return null;
+    }
+
     try {
       const storyData = {
         id: story.id,
+        user_id: user.id,
         title: story.title,
         company: story.company,
         role: story.role,
@@ -143,7 +161,7 @@ export const useStories = () => {
 
   useEffect(() => {
     fetchStories();
-  }, []);
+  }, [user]);
 
   return {
     stories,
