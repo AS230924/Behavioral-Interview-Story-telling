@@ -85,7 +85,7 @@ const Index = () => {
                 </span>
               </h1>
               <p className="text-muted-foreground mt-1">
-                Map and evaluate your STAR stories for Amazon interview success
+                Map and evaluate your STAR stories for behavioral interview success
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Signed in as {user?.email}
