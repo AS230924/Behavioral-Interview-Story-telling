@@ -80,6 +80,8 @@ const Auth = () => {
       let message = 'Failed to create account';
       if (error.message.includes('already registered')) {
         message = 'This email is already registered. Please sign in instead.';
+      } else if (error.message.includes('security purposes') || error.message.includes('rate')) {
+        message = 'Please wait a moment before trying again.';
       }
       toast({
         title: 'Error',
