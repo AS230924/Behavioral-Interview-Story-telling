@@ -22,21 +22,40 @@ const ResetPassword = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user arrived via recovery link
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+    // Listen for auth state changes - PASSWORD_RECOVERY fires when user arrives via reset link
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
         setIsValidSession(true);
         setChecking(false);
       }
     });
 
-    // Also check existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsValidSession(true);
-      }
-      setChecking(false);
-    });
+    // Check URL hash for recovery token - Supabase embeds tokens in the hash
+    const hash = window.location.hash;
+    if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
+      // Give the auth listener time to process the hash
+      const timeout = setTimeout(() => {
+        // If still checking after 3s, check session directly
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            setIsValidSession(true);
+          }
+          setChecking(false);
+        });
+      }, 3000);
+      return () => {
+        subscription.unsubscribe();
+        clearTimeout(timeout);
+      };
+    } else {
+      // No hash tokens - check existing session immediately
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          setIsValidSession(true);
+        }
+        setChecking(false);
+      });
+    }
 
     return () => subscription.unsubscribe();
   }, []);
