@@ -13,7 +13,7 @@ async function callGrok(apiKey: string, messages: any[], maxTokens: number, temp
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "grok-3-mini-fast",
+      model: "grok-4-1-fast-reasoning",
       messages,
       temperature,
       max_tokens: maxTokens,
