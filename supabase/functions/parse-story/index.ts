@@ -6,6 +6,54 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+async function callGrok(apiKey: string, messages: any[], maxTokens: number, temperature: number) {
+  const response = await fetch("https://api.x.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "grok-3-mini-fast",
+      messages,
+      temperature,
+      max_tokens: maxTokens,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Grok API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content;
+}
+
+async function callOpenRouter(apiKey: string, messages: any[], maxTokens: number, temperature: number) {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "arcee-ai/trinity-large-preview:free",
+      messages,
+      temperature,
+      max_tokens: maxTokens,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -13,10 +61,11 @@ serve(async (req) => {
 
   try {
     const { rawStory } = await req.json();
+    const XAI_API_KEY = Deno.env.get("XAI_API_KEY");
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
-    
-    if (!OPENROUTER_API_KEY) {
-      throw new Error("OPENROUTER_API_KEY is not configured");
+
+    if (!XAI_API_KEY && !OPENROUTER_API_KEY) {
+      throw new Error("No AI API keys configured");
     }
 
     if (!rawStory || rawStory.trim().length < 50) {
@@ -104,49 +153,35 @@ Remember to:
 - Keep the situation concise but impactful
 - Focus on what the candidate personally did, not the team`;
 
-    console.log("Parsing story with Gemini...");
+    const messages = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
+    ];
 
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "arcee-ai/trinity-large-preview:free",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
-          ],
-          temperature: 0.3,
-          max_tokens: 4096,
-        }),
-      }
-    );
+    let content: string | undefined;
+    let provider = "unknown";
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("OpenRouter API error:", response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+    // Try Grok first, fall back to OpenRouter
+    if (XAI_API_KEY) {
+      try {
+        console.log("Attempting parsing with Grok (xAI)...");
+        content = await callGrok(XAI_API_KEY, messages, 4096, 0.3);
+        provider = "grok";
+        console.log("Grok response received, length:", content?.length);
+      } catch (grokError) {
+        console.error("Grok failed, falling back to OpenRouter:", grokError);
       }
-      
-      throw new Error(`OpenRouter API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-
-    console.log("OpenRouter Response received, length:", content?.length);
+    if (!content && OPENROUTER_API_KEY) {
+      console.log("Using OpenRouter as fallback...");
+      content = await callOpenRouter(OPENROUTER_API_KEY, messages, 4096, 0.3);
+      provider = "openrouter";
+      console.log("OpenRouter response received, length:", content?.length);
+    }
 
     if (!content) {
-      throw new Error("No response from OpenRouter");
+      throw new Error("No response from any AI provider");
     }
 
     // Parse the JSON response
@@ -159,9 +194,11 @@ Remember to:
         throw new Error("No JSON found in response");
       }
     } catch (parseError) {
-      console.error("Failed to parse Gemini response:", content);
+      console.error("Failed to parse AI response:", content);
       throw new Error("Failed to parse AI response");
     }
+
+    console.log(`Parsing complete (${provider}).`);
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
